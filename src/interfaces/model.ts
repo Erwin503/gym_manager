@@ -1,27 +1,27 @@
 // Интерфейс для таблицы Users
 export interface User {
-    id: number;
-    name: string;
+    id?: number;
+    name?: string;
     email: string;
     password_hash: string;
-    phone: string;
+    phone?: string;
     role: 'super_admin' | 'gym_admin' | 'trainer' | 'user';
   }
   
   // Интерфейс для таблицы TrainersDetails
   export interface TrainerDetails {
-    id: number;
+    id?: number;
     user_id: number; // Ссылка на пользователя
-    specialization: string;
-    experience_years: number;
-    bio: string;
-    certifications: string;
-    photo_url: string;
+    specialization?: string;
+    experience_years?: number;
+    bio?: string;
+    certifications?: string;
+    photo_url?: string;
   }
   
   // Интерфейс для таблицы TrainerWorkingHours
   export interface TrainerWorkingHour {
-    id: number;
+    id?: number;
     trainer_id: number; // Ссылка на тренера
     day_of_week: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
     specific_date?: Date; // Необязательное поле для специфической даты
@@ -31,11 +31,11 @@ export interface User {
   
   // Интерфейс для таблицы Gyms
   export interface Gym {
-    id: number;
+    id?: number;
     name: string;
-    address: string;
-    phone: string;
-    email: string;
+    address?: string;
+    phone?: string;
+    email?: string;
   }
   
   // Интерфейс для таблицы TrainingSessions
@@ -45,7 +45,7 @@ export interface User {
     trainer_id: number; // Ссылка на тренера
     gym_id: number; // Ссылка на тренажерный зал
     date: Date;
-    training_type: string;
+    training_type?: string;
     comments?: string; // Необязательное поле
   }
   

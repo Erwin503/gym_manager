@@ -11,7 +11,7 @@ import { checkRole } from '../middleware/checkRole';
 const router = express.Router();
 
 // Все маршруты требуют аутентификации и роли "trainer"
-router.use(authenticateToken, checkRole(['trainer']));
+router.use(authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']));
 
 // Добавление рабочего времени
 router.post('/', addWorkingHours);
