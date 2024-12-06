@@ -4,7 +4,6 @@ import { TrainerDetails, User } from "../interfaces/model";
 import logger from "../utils/logger";
 import { AuthRequest } from "../middleware/authMiddleware";
 
-
 // Добавление информации о тренере
 export const addTrainerDetails = async (
   req: AuthRequest,
@@ -12,28 +11,25 @@ export const addTrainerDetails = async (
   next: NextFunction
 ) => {
   try {
-    const {
-      specialization,
-      experience_years,
-      bio,
-      certifications,
-      photo_url,
-    } = req.body;
-    const user_id = req.user.id
+    const { specialization, experience_years, bio, certifications, photo_url } =
+      req.body;
+    const user_id = req.user.id;
 
     logger.debug(
       `Добавление информации о тренере для пользователя ID: ${user_id}`,
       { data: req.body }
     );
 
-    const user: User = (await db<User>("Users").where({id: user_id}).first())!;
+    const user: User = (await db<User>("Users")
+      .where({ id: user_id })
+      .first())!;
 
     if (!user) {
       logger.error(`Пользователь не найден: ${user_id}`);
       res.status(404).json({ message: "Информация о пользователе не найдена" });
       return;
     }
-    logger.debug(`Роль пользователя: ${user.role}`)
+    logger.debug(`Роль пользователя: ${user.role}`);
 
     if (user.role != "trainer") {
       logger.error(`У пользователя ${user_id} не подходящая роль`);
@@ -49,11 +45,9 @@ export const addTrainerDetails = async (
       logger.error(
         `У тренера уже есть информация, пожалуйста обновите уже существующую. ${trainerInfo}`
       );
-      res
-        .status(404)
-        .json({
-          message: `У тренера уже есть информация, пожалуйста обновите уже существующую. ${trainerInfo}`,
-        });
+      res.status(404).json({
+        message: `У тренера уже есть информация, пожалуйста обновите уже существующую. ${trainerInfo}`,
+      });
       return;
     }
 
@@ -114,7 +108,9 @@ export const getTrainerDetails = async (
     res.status(200).json(trainer);
   } catch (error) {
     logger.error(
-      `Ошибка при получении информации о тренере для пользователя ID: ${JSON.stringify(req.user)}`,
+      `Ошибка при получении информации о тренере для пользователя ID: ${JSON.stringify(
+        req.user
+      )}`,
       { error }
     );
     next(error);
@@ -148,7 +144,9 @@ export const getTrainerDetailsById = async (
     res.status(200).json(trainer);
   } catch (error) {
     logger.error(
-      `Ошибка при получении информации о тренере для пользователя ID: ${JSON.stringify(req.params.id)}`,
+      `Ошибка при получении информации о тренере для пользователя ID: ${JSON.stringify(
+        req.params.id
+      )}`,
       { error }
     );
     next(error);
@@ -247,3 +245,26 @@ export const deleteTrainerDetails = async (
     next(error);
   }
 };
+
+  export const getAllTrainers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Выполняем запрос к базе данных
+      const trainers = await db<TrainerDetails>('TrainersDetails')
+        .join('Users', 'TrainersDetails.user_id', '=', 'Users.id') // Присоединяем таблицу Users
+        .select(
+          'Users.id as user_id',
+          'Users.name',
+          'Users.email',
+          'TrainersDetails.specialization',
+          'TrainersDetails.experience_years',
+          'TrainersDetails.bio',
+          'TrainersDetails.certifications',
+          'TrainersDetails.photo_url'
+        );
+  
+      // Возвращаем список тренеров
+      res.status(200).json(trainers);
+    } catch (error) {
+      next(error);
+    }
+  };

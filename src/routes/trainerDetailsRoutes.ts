@@ -5,6 +5,7 @@ import {
   updateTrainerDetails,
   deleteTrainerDetails,
   getTrainerDetailsById,
+  getAllTrainers,
 } from '../controllers/trainerDetailsController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { checkRole } from '../middleware/checkRole';
@@ -23,7 +24,10 @@ router.put('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_ad
 // Удаление информации о тренере по ID пользователя
 router.delete('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), deleteTrainerDetails);
 
-router.get('/:id', getTrainerDetailsById)
+router.get('/byid/:id', getTrainerDetailsById)
+
+// Получение ввсех тренеров
+router.get('/trainers', getAllTrainers)
 
 
 
