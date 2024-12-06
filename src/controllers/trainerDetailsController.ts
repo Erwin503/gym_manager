@@ -120,6 +120,40 @@ export const getTrainerDetails = async (
     next(error);
   }
 };
+// Получение информации о тренере по ID пользователя
+export const getTrainerDetailsById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user_id = parseInt(req.params.id, 10);
+
+    logger.debug(
+      `Получение информации о тренере для пользователя ID: ${user_id}`
+    );
+
+    const trainer = await db<TrainerDetails>("TrainersDetails")
+      .where({ user_id: user_id })
+      .first();
+
+    if (!trainer) {
+      logger.error(
+        `Информация о тренере не найдена для пользователя ID: ${user_id}`
+      );
+      res.status(404).json({ message: "Информация о тренере не найдена" });
+      return;
+    }
+
+    res.status(200).json(trainer);
+  } catch (error) {
+    logger.error(
+      `Ошибка при получении информации о тренере для пользователя ID: ${JSON.stringify(req.params.id)}`,
+      { error }
+    );
+    next(error);
+  }
+};
 
 // Обновление информации о тренере
 export const updateTrainerDetails = async (

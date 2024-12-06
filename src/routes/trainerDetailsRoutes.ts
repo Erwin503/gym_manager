@@ -4,25 +4,27 @@ import {
   getTrainerDetails,
   updateTrainerDetails,
   deleteTrainerDetails,
+  getTrainerDetailsById,
 } from '../controllers/trainerDetailsController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { checkRole } from '../middleware/checkRole';
 
 const router = express.Router();
 
-// Все маршруты требуют аутентификации и роли "trainer"
-router.use(authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']));
-
 // Добавление информации о тренере
-router.post('/', addTrainerDetails);
+router.post('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), addTrainerDetails);
 
 // Получение информации о тренере по ID пользователя
 router.get('/', getTrainerDetails);
 
 // Обновление информации о тренере по ID пользователя
-router.put('/', updateTrainerDetails);
+router.put('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), updateTrainerDetails);
 
 // Удаление информации о тренере по ID пользователя
-router.delete('/', deleteTrainerDetails);
+router.delete('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), deleteTrainerDetails);
+
+router.get('/:id', getTrainerDetailsById)
+
+
 
 export default router;
