@@ -44,7 +44,7 @@ export const signup = async (
 
     res
       .status(201)
-      .json({ message: "Пользователь успешно зарегистрирован", token: token});
+      .json({ message: "Пользователь успешно зарегистрирован", token: token });
   } catch (error) {
     next(error);
   }
@@ -77,13 +77,11 @@ export const login = async (
       { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
-    res
-      .status(200)
-      .json({
-        message: "Вход успешен",
-        token: token,
-        user: { id: user.id, name: user.name, email: user.email },
-      });
+    res.status(200).json({
+      message: "Вход успешен",
+      token: token,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
   } catch (error) {
     next(error);
   }
@@ -105,15 +103,13 @@ export const getUserProfile = async (
       throw new AppError("Пользователь не найден", 404);
     }
 
-    res
-      .status(200)
-      .json({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-      });
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    });
   } catch (error) {
     next(error);
   }
@@ -129,7 +125,9 @@ export const updateUserProfile = async (
     const userId = req.user?.id;
     const { name, email, phone } = req.body;
 
-    logger.debug(`id: ${userId}, name: ${name}, email: ${email}, phone: ${phone}`);
+    logger.debug(
+      `id: ${userId}, name: ${name}, email: ${email}, phone: ${phone}`
+    );
 
     await db("Users")
       .where({ id: userId })
@@ -149,7 +147,7 @@ export const deleteUser = async (
 ) => {
   try {
     const userId = req.user?.id;
-    
+
     logger.debug(`id: ${userId}`);
 
     await db("Users").where({ id: userId }).del();

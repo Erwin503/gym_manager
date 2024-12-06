@@ -23,7 +23,7 @@ export const authenticateToken = (
       logger.error(err);
       return res.status(403).json({ message: "Недействительный токен" });
     }
-    logger.debug(user)
+    logger.debug(JSON.stringify(user))
     req.user = user;
     next();
   });
