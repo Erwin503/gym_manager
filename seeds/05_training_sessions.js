@@ -1,4 +1,4 @@
-export const seed = async function(knex) {
+exports.seed = async function(knex) {
   await knex('TrainingSessions').del();
 
   await knex('TrainingSessions').insert([
@@ -12,7 +12,7 @@ export const seed = async function(knex) {
     },
     {
       user_id: 2,
-      working_hour_id: 3,
+      working_hour_id: 1,
       gym_id: 2,
       status: 'booked',
       created_at: new Date(),
