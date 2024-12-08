@@ -35,6 +35,6 @@ export const up = async function (knex: Knex) {
   });
 };
 
-export const down = async function (knex) {
+export const down = async function (knex: Knex) {
   await knex.schema.dropTableIfExists("TrainingSessions");
 };
