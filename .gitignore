@@ -24,10 +24,6 @@ jspm_packages/
 .env.local
 .env.*.local
 
-# Knex migrations and seeds
-migrations/
-seeds/
-
 # TypeScript
 dist/
 *.tsbuildinfo
