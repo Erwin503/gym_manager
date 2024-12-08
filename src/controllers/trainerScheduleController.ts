@@ -75,6 +75,33 @@ export const getWorkingHours = async (
   }
 };
 
+// Получение рабочего расписания тренера
+export const getTrainerScheduleByID = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const trainerId = parseInt(req.params.id);
+
+    const workingHours = await db<TrainerWorkingHour>(
+      "TrainerWorkingHours"
+    ).where({ trainer_id: trainerId });
+
+    logger.debug(`Рабочее расписание получено для тренера ID: ${trainerId}`, {
+      workingHours,
+    });
+
+    res.status(200).json(workingHours);
+  } catch (error) {
+    logger.error(
+      `Ошибка при получении рабочего расписания для тренера ID: ${req.params.id}`,
+      { error }
+    );
+    next(error);
+  }
+};
+
 // Обновление рабочего времени
 export const updateWorkingHours = async (
   req: AuthRequest,

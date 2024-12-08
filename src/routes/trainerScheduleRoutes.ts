@@ -4,25 +4,25 @@ import {
   getWorkingHours,
   updateWorkingHours,
   deleteWorkingHours,
+  getTrainerScheduleByID
 } from '../controllers/trainerScheduleController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { checkRole } from '../middleware/checkRole';
 
 const router = express.Router();
 
-// Все маршруты требуют аутентификации и роли "trainer"
-router.use(authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']));
-
 // Добавление рабочего времени
-router.post('/', addWorkingHours);
+router.post('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), addWorkingHours);
 
 // Получение рабочего расписания
-router.get('/', getWorkingHours);
+router.get('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), getWorkingHours);
+
+router.get('/byid/:id', getTrainerScheduleByID)
 
 // Обновление рабочего времени по ID
-router.put('/:id', updateWorkingHours);
+router.put('/:id', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), updateWorkingHours);
 
 // Удаление рабочего времени по ID
-router.delete('/:id', deleteWorkingHours);
+router.delete('/:id', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), deleteWorkingHours);
 
 export default router;
