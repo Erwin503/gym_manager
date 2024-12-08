@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt'); // Используем require вместо import
+const bcrypt = require('bcryptjs'); // Используем require вместо import
 
 exports.seed = async function (knex) {
   // Удаляем все существующие записи

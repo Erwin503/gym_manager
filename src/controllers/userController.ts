@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "../db/knex";
 import { AppError } from "../errors/AppError";
