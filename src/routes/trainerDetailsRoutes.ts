@@ -16,7 +16,7 @@ const router = express.Router();
 router.post('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), addTrainerDetails);
 
 // Получение информации о тренере по ID пользователя
-router.get('/', getTrainerDetails);
+router.get('/:id', getTrainerDetails);
 
 // Обновление информации о тренере по ID пользователя
 router.put('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), updateTrainerDetails);

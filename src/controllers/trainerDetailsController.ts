@@ -87,7 +87,7 @@ export const getTrainerDetails = async (
   next: NextFunction
 ) => {
   try {
-    const user_id = req.user.id;
+    const user_id = req.params.id;
 
     logger.debug(
       `Получение информации о тренере для пользователя ID: ${user_id}`
