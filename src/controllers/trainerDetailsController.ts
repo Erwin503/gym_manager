@@ -246,25 +246,29 @@ export const deleteTrainerDetails = async (
   }
 };
 
-  export const getAllTrainers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // Выполняем запрос к базе данных
-      const trainers = await db<TrainerDetails>('TrainersDetails')
-        .join('Users', 'TrainersDetails.user_id', '=', 'Users.id') // Присоединяем таблицу Users
-        .select(
-          'Users.id as user_id',
-          'Users.name',
-          'Users.email',
-          'TrainersDetails.specialization',
-          'TrainersDetails.experience_years',
-          'TrainersDetails.bio',
-          'TrainersDetails.certifications',
-          'TrainersDetails.photo_url'
-        );
-  
-      // Возвращаем список тренеров
-      res.status(200).json(trainers);
-    } catch (error) {
-      next(error);
-    }
-  };
+export const getAllTrainers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Выполняем запрос к базе данных
+    const trainers = await db<TrainerDetails>("TrainersDetails")
+      .join("Users", "TrainersDetails.user_id", "=", "Users.id") // Присоединяем таблицу Users
+      .select(
+        "Users.id as user_id",
+        "Users.name",
+        "Users.email",
+        "TrainersDetails.specialization",
+        "TrainersDetails.experience_years",
+        "TrainersDetails.bio",
+        "TrainersDetails.certifications",
+        "TrainersDetails.photo_url"
+      );
+
+    // Возвращаем список тренеров
+    res.status(200).json(trainers);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,6 +1,7 @@
 import express from 'express';
-import { signup, login, getUserProfile, updateUserProfile, deleteUser } from '../controllers/userController';
+import { signup, login, getUserProfile, updateUserProfile, deleteUser, assignRoleToUser } from '../controllers/userController';
 import { authenticateToken } from '../middleware/authMiddleware';
+import { checkRole } from '../middleware/checkRole';
 
 const router = express.Router();
 
@@ -18,5 +19,8 @@ router.put('/profile', authenticateToken, updateUserProfile);
 
 // Маршрут для удаления пользователя (доступен только авторизованным пользователям)
 router.delete('/profile', authenticateToken, deleteUser);
+
+// Маршрут для повышения роли
+router.post('/promote', authenticateToken, checkRole(['gym_admin', 'super_admin']), assignRoleToUser);
 
 export default router;

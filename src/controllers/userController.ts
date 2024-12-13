@@ -80,7 +80,12 @@ export const login = async (
     res.status(200).json({
       message: "Вход успешен",
       token: token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     next(error);
@@ -154,6 +159,51 @@ export const deleteUser = async (
 
     res.status(200).json({ message: "Пользователь успешно удален" });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const assignRoleToUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, role } = req.body;
+
+    // Проверка корректности роли
+    const validRoles = ['gym_admin', 'trainer'];
+    if (!validRoles.includes(role)) {
+      res.status(400).json({
+        message: 'Некорректная роль. Допустимые роли: "gym_admin", "trainer".',
+      });
+    }
+
+    // Проверка существования пользователя
+    const user = await db('Users').where({ email }).first();
+
+    if (!user) {
+      res.status(404).json({ message: 'Пользователь с указанным email не найден.' });
+    }
+
+    // Проверка текущей роли пользователя
+    if (user.role === role) {
+      res.status(200).json({
+        message: `Пользователю уже назначена роль "${role}". Изменений не требуется.`,
+      });
+    }
+
+    // Обновление роли пользователя
+    await db('Users')
+      .where({ email })
+      .update({
+        role,
+        updated_at: new Date(),
+      });
+
+    logger.info(`Роль "${role}" успешно назначена пользователю с email ${email}.`);
+
+    res.status(200).json({
+      message: `Роль "${role}" успешно назначена пользователю с email ${email}.`,
+    });
+  } catch (error) {
+    logger.error('Ошибка при назначении роли пользователю', { error });
     next(error);
   }
 };
