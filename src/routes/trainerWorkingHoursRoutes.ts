@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post('/', authenticateToken, createWorkingHour);
 router.get('/', authenticateToken, checkRole(['trainer']), getTrainerWorkingHoursWithSessions);
-router.get('/:id', authenticateToken, checkRole(['gym_admin', 'super_admin']), getTrainerWorkingHoursWithSessionsForAdmin);
+router.get('/:id', authenticateToken, getTrainerWorkingHoursWithSessionsForAdmin);
 router.put('/:id', authenticateToken, updateWorkingHour);
 router.delete('/:id', authenticateToken, deleteWorkingHour);
 
