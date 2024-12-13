@@ -207,3 +207,56 @@ export const assignRoleToUser = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page = 1, limit = 10, role } = req.query;
+
+    const pageNumber = parseInt(page as string, 10);
+    const pageLimit = parseInt(limit as string, 10);
+
+    // Запрос пользователей
+    const query = db('Users').select(
+      'id',
+      'email',
+      'role',
+      'created_at',
+      'updated_at'
+    );
+
+    // Фильтр по роли (если указан в запросе)
+    if (role) {
+      query.where({ role });
+    }
+
+    // Пагинация
+    query.offset((pageNumber - 1) * pageLimit).limit(pageLimit);
+
+    const users = await query;
+
+    // Общее количество пользователей для пагинации
+    const totalUsersQuery = db('Users').count('* as total');
+    if (role) {
+      totalUsersQuery.where({ role });
+    }
+
+    const [{ total }] = await totalUsersQuery;
+
+    logger.debug('Список пользователей успешно получен', {
+      count: users.length,
+      total,
+    });
+
+    res.status(200).json({
+      users,
+      meta: {
+        total: parseInt(total as string, 10),
+        page: pageNumber,
+        limit: pageLimit,
+      },
+    });
+  } catch (error) {
+    logger.error('Ошибка при получении списка пользователей', { error });
+    next(error);
+  }
+};

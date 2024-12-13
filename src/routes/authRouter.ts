@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, login, getUserProfile, updateUserProfile, deleteUser, assignRoleToUser } from '../controllers/userController';
+import { signup, login, getUserProfile, updateUserProfile, deleteUser, assignRoleToUser, getAllUsers } from '../controllers/userController';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { checkRole } from '../middleware/checkRole';
 
@@ -22,5 +22,7 @@ router.delete('/profile', authenticateToken, deleteUser);
 
 // Маршрут для повышения роли
 router.post('/promote', authenticateToken, checkRole(['gym_admin', 'super_admin']), assignRoleToUser);
+
+router.get('/all', authenticateToken, checkRole(['gym_admin', 'super_admin']), getAllUsers);
 
 export default router;
