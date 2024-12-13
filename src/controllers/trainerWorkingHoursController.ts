@@ -30,7 +30,7 @@ export const createWorkingHour = async (req: Request, res: Response, next: NextF
 
 export const getTrainerWorkingHoursWithSessions = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const { trainer_id } = req.user.id;
+      const trainer_id = req.user.id;
   
       logger.debug('Получение рабочих часов тренера с ID', { trainer_id });
   

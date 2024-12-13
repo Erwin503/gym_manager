@@ -10,7 +10,7 @@ import { authenticateToken } from '../middleware/authMiddleware';
 const router = express.Router();
 
 router.post('/', authenticateToken, createWorkingHour);
-router.get('/:trainer_id/working-hours', authenticateToken, getTrainerWorkingHoursWithSessions);
+router.get('/:trainer_id', authenticateToken, getTrainerWorkingHoursWithSessions);
 router.put('/:id', authenticateToken, updateWorkingHour);
 router.delete('/:id', authenticateToken, deleteWorkingHour);
 
