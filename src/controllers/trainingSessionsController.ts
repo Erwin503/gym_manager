@@ -101,8 +101,8 @@ export const completeTrainingSession = async (req: Request, res: Response, next:
   
 export const getUserTrainingSessions = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const { user_id } = req.user.id;
-  
+      const user_id = req.user.id;
+      logger.debug(`user_id: ${user_id}`);
       const trainingSessions = await db('TrainingSessions as ts')
         .leftJoin('TrainerWorkingHours as twh', 'ts.working_hour_id', 'twh.id')
         .leftJoin('Users as trainers', 'twh.trainer_id', 'trainers.id')
