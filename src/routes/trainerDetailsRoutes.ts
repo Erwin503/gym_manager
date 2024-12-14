@@ -12,6 +12,9 @@ import { checkRole } from '../middleware/checkRole';
 
 const router = express.Router();
 
+// Получение ввсех тренеров
+router.get('/trainers', getAllTrainers)
+
 // Добавление информации о тренере
 router.post('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), addTrainerDetails);
 
@@ -25,9 +28,6 @@ router.put('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_ad
 router.delete('/', authenticateToken, checkRole(['trainer', ' gym_admin', 'super_admin']), deleteTrainerDetails);
 
 router.get('/byid/:id', getTrainerDetailsById)
-
-// Получение ввсех тренеров
-router.get('/trainers', getAllTrainers)
 
 
 
