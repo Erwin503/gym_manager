@@ -208,6 +208,61 @@ export const updateTrainerDetails = async (
   }
 };
 
+// Обновление информации о тренере
+export const updateTrainerDetailsForAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user_id = req.params.id;
+    const { specialization, experience_years, bio, certifications, photo_url } =
+      req.body;
+
+    logger.debug(
+      `Обновление информации о тренере для пользователя ID: ${user_id}`,
+      { data: req.body }
+    );
+
+    const updatedCount = await db<TrainerDetails>("TrainersDetails")
+      .where({ user_id: parseInt(user_id, 10) })
+      .update({
+        specialization,
+        experience_years,
+        bio,
+        certifications,
+        photo_url,
+      });
+
+    if (!updatedCount) {
+      logger.debug(
+        `Информация о тренере не найдена для пользователя ID: ${user_id}`
+      );
+      res.status(404).json({ message: "Информация о тренере не найдена" });
+    }
+
+    const updatedTrainer = await db<TrainerDetails>("TrainersDetails")
+      .where({ user_id: parseInt(user_id, 10) })
+      .first();
+
+    logger.debug(
+      `Информация о тренере успешно обновлена для пользователя ID: ${user_id}`,
+      { updatedTrainer }
+    );
+
+    res.status(200).json({
+      message: "Информация о тренере успешно обновлена",
+      updatedTrainer,
+    });
+  } catch (error) {
+    logger.error(
+      `Ошибка при обновлении информации о тренере для пользователя ID: ${req.params.user_id}`,
+      { error }
+    );
+    next(error);
+  }
+};
+
 // Удаление информации о тренере
 export const deleteTrainerDetails = async (
   req: AuthRequest,
