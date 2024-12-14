@@ -308,8 +308,9 @@ export const getAllTrainers = async (
 ) => {
   try {
     // Выполняем запрос к базе данных
-    const trainers = await db<TrainerDetails>("TrainersDetails")
-      .join("Users", "TrainersDetails.user_id", "=", "Users.id") // Присоединяем таблицу Users
+    const trainers = await db("Users")
+      .leftJoin("TrainersDetails", "Users.id", "=", "TrainersDetails.user_id") // Присоединяем таблицу TrainersDetails
+      .where("Users.role", "trainer") // Фильтруем только тренеров
       .select(
         "Users.id as user_id",
         "Users.name",
@@ -321,9 +322,34 @@ export const getAllTrainers = async (
         "TrainersDetails.photo_url"
       );
 
+    // Преобразуем данные, чтобы при отсутствии деталей добавлялось сообщение
+    const formattedTrainers = trainers.map(trainer => {
+      const hasDetails = trainer.specialization || trainer.experience_years || trainer.bio || trainer.certifications || trainer.photo_url;
+      if (!hasDetails) {
+        return {
+          user_id: trainer.user_id,
+          name: trainer.name,
+          email: trainer.email,
+          message: "У этого тренера нет дополнительной информации"
+        };
+      }
+      return {
+        user_id: trainer.user_id,
+        name: trainer.name,
+        email: trainer.email,
+        specialization: trainer.specialization,
+        experience_years: trainer.experience_years,
+        bio: trainer.bio,
+        certifications: trainer.certifications,
+        photo_url: trainer.photo_url
+      };
+    });
+
     // Возвращаем список тренеров
-    res.status(200).json(trainers);
+    res.status(200).json(formattedTrainers);
   } catch (error) {
+    logger.error("Ошибка при получении всех тренеров", { error });
     next(error);
   }
 };
+
