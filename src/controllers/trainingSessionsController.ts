@@ -119,9 +119,11 @@ export const getUserTrainingSessions = async (
   try {
     const user_id = req.user.id;
     logger.debug(`user_id: ${user_id}`);
+
     const trainingSessions = await db("TrainingSessions as ts")
       .leftJoin("TrainerWorkingHours as twh", "ts.working_hour_id", "twh.id")
       .leftJoin("Users as trainers", "twh.trainer_id", "trainers.id")
+      .leftJoin("Users as clients", "ts.user_id", "clients.id")
       .where("ts.user_id", user_id)
       .select(
         "ts.id as session_id",
@@ -129,7 +131,8 @@ export const getUserTrainingSessions = async (
         "twh.specific_date",
         "twh.start_time",
         "twh.end_time",
-        "trainers.name as trainer_name"
+        "trainers.name as trainer_name",
+        "clients.name as client_name"
       )
       .orderBy("twh.specific_date", "asc")
       .orderBy("twh.start_time", "asc");
