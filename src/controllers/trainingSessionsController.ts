@@ -186,6 +186,7 @@ export const getUserTrainingSessions = async (
         "ts.id as session_id",
         "ts.status",
         "twh.specific_date",
+        "twh.day_of_week",
         "twh.start_time",
         "twh.end_time",
         "trainers.name as trainer_name",

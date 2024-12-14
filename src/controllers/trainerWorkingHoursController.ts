@@ -161,6 +161,8 @@ export const getTrainerWorkingHoursWithSessionsForAdmin = async (
           db.raw("?", ["booked"])
         );
       })
+      .leftJoin("Users as trainers", "twh.trainer_id", "trainers.id")
+      .leftJoin("Users as clients", "ts.user_id", "clients.id")
       .where("twh.trainer_id", trainer_id)
       .select(
         "twh.id as working_hour_id",
@@ -170,6 +172,8 @@ export const getTrainerWorkingHoursWithSessionsForAdmin = async (
         "twh.start_time",
         "twh.end_time",
         "twh.status as working_hour_status",
+        "trainers.name as trainer_name",
+        "clients.name as client_name",
         db.raw(`
           CASE 
             WHEN twh.status != 'available' THEN JSON_ARRAYAGG(JSON_OBJECT(
@@ -190,7 +194,9 @@ export const getTrainerWorkingHoursWithSessionsForAdmin = async (
         "twh.specific_date",
         "twh.start_time",
         "twh.end_time",
-        "twh.status"
+        "twh.status",
+        "trainers.name",
+        "clients.name",
       );
     logger.debug("Рабочие часы с сессиями успешно получены", {
       workingHoursWithSessions,
