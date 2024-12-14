@@ -163,12 +163,16 @@ export const deleteUser = async (
   }
 };
 
-export const assignRoleToUser = async (req: Request, res: Response, next: NextFunction) => {
+export const assignRoleToUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email, role } = req.body;
 
     // Проверка корректности роли
-    const validRoles = ['gym_admin', 'trainer'];
+    const validRoles = ["gym_admin", "trainer"];
     if (!validRoles.includes(role)) {
       res.status(400).json({
         message: 'Некорректная роль. Допустимые роли: "gym_admin", "trainer".',
@@ -176,10 +180,12 @@ export const assignRoleToUser = async (req: Request, res: Response, next: NextFu
     }
 
     // Проверка существования пользователя
-    const user = await db('Users').where({ email }).first();
+    const user = await db("Users").where({ email }).first();
 
     if (!user) {
-      res.status(404).json({ message: 'Пользователь с указанным email не найден.' });
+      res
+        .status(404)
+        .json({ message: "Пользователь с указанным email не найден." });
     }
 
     // Проверка текущей роли пользователя
@@ -190,25 +196,29 @@ export const assignRoleToUser = async (req: Request, res: Response, next: NextFu
     }
 
     // Обновление роли пользователя
-    await db('Users')
-      .where({ email })
-      .update({
-        role,
-        updated_at: new Date(),
-      });
+    await db("Users").where({ email }).update({
+      role,
+      updated_at: new Date(),
+    });
 
-    logger.info(`Роль "${role}" успешно назначена пользователю с email ${email}.`);
+    logger.info(
+      `Роль "${role}" успешно назначена пользователю с email ${email}.`
+    );
 
     res.status(200).json({
       message: `Роль "${role}" успешно назначена пользователю с email ${email}.`,
     });
   } catch (error) {
-    logger.error('Ошибка при назначении роли пользователю', { error });
+    logger.error("Ошибка при назначении роли пользователю", { error });
     next(error);
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { page = 1, limit = 10, role } = req.query;
 
@@ -216,12 +226,14 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     const pageLimit = parseInt(limit as string, 10);
 
     // Запрос пользователей
-    const query = db('Users').select(
-      'id',
-      'email',
-      'role',
-      'created_at',
-      'updated_at'
+    const query = db("Users").select(
+      "id",
+      "name",
+      "phone",
+      "email",
+      "role",
+      "created_at",
+      "updated_at"
     );
 
     // Фильтр по роли (если указан в запросе)
@@ -235,14 +247,14 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     const users = await query;
 
     // Общее количество пользователей для пагинации
-    const totalUsersQuery = db('Users').count('* as total');
+    const totalUsersQuery = db("Users").count("* as total");
     if (role) {
       totalUsersQuery.where({ role });
     }
 
     const [{ total }] = await totalUsersQuery;
 
-    logger.debug('Список пользователей успешно получен', {
+    logger.debug("Список пользователей успешно получен", {
       count: users.length,
       total,
     });
@@ -256,7 +268,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
       },
     });
   } catch (error) {
-    logger.error('Ошибка при получении списка пользователей', { error });
+    logger.error("Ошибка при получении списка пользователей", { error });
     next(error);
   }
 };
