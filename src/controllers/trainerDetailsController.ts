@@ -13,7 +13,14 @@ export const addTrainerDetails = async (
   try {
     const { specialization, experience_years, bio, certifications, photo_url } =
       req.body;
-    const user_id = req.user.id;
+    let user_id;
+
+    if (req.user.role === "gym_admin" || req.user.role === "super_admin") {
+      user_id = req.body.user_id;
+    }
+    else if (req.user.role === "trainer") {
+      user_id = req.user.id;
+    }
 
     logger.debug(
       `Добавление информации о тренере для пользователя ID: ${user_id}`,
@@ -32,10 +39,11 @@ export const addTrainerDetails = async (
     logger.debug(`Роль пользователя: ${user.role}`);
 
     if (user.role != "trainer") {
-      logger.error(`У пользователя ${user_id} не подходящая роль`);
-      res.status(404).json({ message: "У пользователя не подходящая роль" });
-      return;
+      res.status(403).json({ message: `У выбранного пользователя неподходящая роль: ${user.role}, требуется роль: trainer` });
     }
+
+
+    logger.debug(`user_id: ${user_id}, role: ${user.role}, user.id: ${user.id}, req.user.id: ${req.user.id}`);
 
     const trainerInfo = await db<TrainerDetails>("TrainersDetails")
       .where({ user_id: parseInt(user_id, 10) })
@@ -116,6 +124,7 @@ export const getTrainerDetails = async (
     next(error);
   }
 };
+
 // Получение информации о тренере по ID пользователя
 export const getTrainerDetailsById = async (
   req: Request,

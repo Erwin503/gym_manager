@@ -111,6 +111,63 @@ export const completeTrainingSession = async (
   }
 };
 
+export const cancelTrainingSession = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const trx = await db.transaction(); // Начало транзакции
+  try {
+    const { id } = req.params; // ID тренировочной сессии
+
+    // Завершаем тренировочную сессию
+    const updatedCount = await trx("TrainingSessions").where({ id }).update({
+      status: "canceled",
+      updated_at: new Date(),
+    });
+
+    if (!updatedCount) {
+      await trx.rollback();
+      res.status(404).json({ message: "Тренировочная сессия не найдена" });
+    }
+
+    // Получаем ID рабочего часа, связанного с сессией
+    const trainingSession = await trx("TrainingSessions")
+      .select("working_hour_id")
+      .where({ id })
+      .first();
+
+    if (!trainingSession) {
+      await trx.rollback();
+      res.status(404).json({ message: "Связанный рабочий час не найден" });
+    }
+
+    const { working_hour_id } = trainingSession;
+
+    // Проверяем статус рабочего часа и обновляем его
+    const workingHour = await trx("TrainerWorkingHours")
+      .where({ id: working_hour_id })
+      .first();
+
+    if (workingHour && workingHour.status === "booked") {
+      await trx("TrainerWorkingHours").where({ id: working_hour_id }).update({
+        status: "available",
+        updated_at: new Date(),
+      });
+    }
+
+    await trx.commit(); // Подтверждение транзакции
+
+    res
+      .status(200)
+      .json({ message: "Тренировка завершена и рабочий час обновлён" });
+  } catch (error) {
+    await trx.rollback(); // Откат транзакции в случае ошибки
+    logger.error("Ошибка при завершении тренировки:", error);
+    next(error);
+  }
+};
+
 export const getUserTrainingSessions = async (
   req: AuthRequest,
   res: Response,
